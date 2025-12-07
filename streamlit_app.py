@@ -1390,7 +1390,7 @@ def render_clustering():
                 centroids = np.array(new_centroids)
             
             if is_converged:
-                st.success(f"### Thuật toán HỘI TỤ tại lần lặp thứ {iteration}!")
+                st.success(f"### Thuật toán hội tụ tại lần lặp thứ {iteration}!")
                 break
             iteration += 1
 
