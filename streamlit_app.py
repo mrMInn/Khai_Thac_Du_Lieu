@@ -509,8 +509,8 @@ def render_rough_set():
             upper = upper_approx(eq_approx, X_set)
             
             st.write(f"Xét tập **X = '{target_val}'** và tập thuộc tính **{approx_attrs}**:")
-            st.success(f"**Lower Approx:** {lower}")
-            st.warning(f"**Upper Approx:** {upper}")
+            st.success(f"**Xấp xỉ dưới:** {lower}")
+            st.warning(f"**Xấp xỉ trên:** {upper}")
 
         st.divider()
         st.markdown("##### 3. Độ phụ thuộc dữ liệu Gamma(B,D)")
