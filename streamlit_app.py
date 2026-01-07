@@ -1412,10 +1412,76 @@ def render_clustering():
             
             lan_lap += 1
 
-    elif sub_menu == "Biểu đồ Kết quả":
+    # elif sub_menu == "Biểu đồ Kết quả":
+    #     st.markdown("### Trực quan hóa kết quả")
+        
+    #     # Chạy thuật toán để lấy kết quả cuối
+    #     nhan = khoi_tao_nhan_ngau_nhien(n, k)
+    #     nhan_cu = None
+        
+    #     while True:
+    #         trong_tam = []
+    #         for i in range(k):
+    #             diem_trong_cum = X[nhan == i]
+    #             v = np.mean(diem_trong_cum, axis=0)
+    #             trong_tam.append(v)
+    #         trong_tam = np.array(trong_tam)
+            
+    #         bang = []
+    #         for i, diem in enumerate(X):
+    #             row = [khoang_cach_euclid(diem, trong_tam[j]) for j in range(k)]
+    #             bang.append(row)
+            
+    #         nhan_moi = np.argmin(bang, axis=1)
+            
+    #         if nhan_cu is not None and np.all(nhan_moi == nhan_cu):
+    #             break
+            
+    #         nhan_cu = nhan_moi.copy()
+    #         nhan = nhan_moi
+        
+    #     # Vẽ biểu đồ
+    #     fig, ax = plt.subplots(figsize=(9, 7))
+    #     colors = ['red', 'blue', 'green', 'orange', 'purple']
+        
+    #     for i in range(k):
+    #         cum = X[nhan == i]
+    #         ax.scatter(cum[:, 0], cum[:, 1], s=80, label=f"Cụm C{i+1}", c=colors[i])
+            
+    #         tam = trong_tam[i]
+    #         ban_kinh = max(np.linalg.norm(cum - tam, axis=1)) + 0.15
+    #         vong_tron = mpatches.Circle(
+    #             tam,
+    #             ban_kinh,
+    #             fill=False,
+    #             linewidth=2,
+    #             edgecolor=colors[i],
+    #             linestyle='--',
+    #             alpha=0.7
+    #         )
+    #         ax.add_patch(vong_tron)
+        
+    #     ax.scatter(
+    #         trong_tam[:, 0], trong_tam[:, 1],
+    #         marker="X", s=250, edgecolors="black",
+    #         c='yellow',
+    #         label="Trọng tâm"
+    #     )
+        
+    #     for i, diem in enumerate(X):
+    #         ax.text(diem[0] + 0.03, diem[1] + 0.03, f"x{i+1}", fontsize=10)
+        
+    #     ax.set_title("K-Means Clustering (k = 2)", fontsize=14)
+    #     ax.set_xlabel("Chiều 1")
+    #     ax.set_ylabel("Chiều 2")
+    #     ax.legend()
+    #     ax.grid(True, linestyle="--", alpha=0.4)
+        
+    #     st.pyplot(fig)
+
+elif sub_menu == "Biểu đồ Kết quả":
         st.markdown("### Trực quan hóa kết quả")
         
-        # Chạy thuật toán để lấy kết quả cuối
         nhan = khoi_tao_nhan_ngau_nhien(n, k)
         nhan_cu = None
         
@@ -1423,7 +1489,11 @@ def render_clustering():
             trong_tam = []
             for i in range(k):
                 diem_trong_cum = X[nhan == i]
-                v = np.mean(diem_trong_cum, axis=0)
+                # Xử lý trường hợp cụm rỗng (nếu có) để tránh lỗi nan
+                if len(diem_trong_cum) > 0:
+                    v = np.mean(diem_trong_cum, axis=0)
+                else:
+                    v = X[np.random.randint(len(X))] # Re-init nếu rỗng
                 trong_tam.append(v)
             trong_tam = np.array(trong_tam)
             
@@ -1440,7 +1510,7 @@ def render_clustering():
             nhan_cu = nhan_moi.copy()
             nhan = nhan_moi
         
-        # Vẽ biểu đồ
+        # VẼ BIỂU ĐỒ
         fig, ax = plt.subplots(figsize=(9, 7))
         colors = ['red', 'blue', 'green', 'orange', 'purple']
         
@@ -1448,18 +1518,25 @@ def render_clustering():
             cum = X[nhan == i]
             ax.scatter(cum[:, 0], cum[:, 1], s=80, label=f"Cụm C{i+1}", c=colors[i])
             
-            tam = trong_tam[i]
-            ban_kinh = max(np.linalg.norm(cum - tam, axis=1)) + 0.15
-            vong_tron = mpatches.Circle(
-                tam,
-                ban_kinh,
-                fill=False,
-                linewidth=2,
-                edgecolor=colors[i],
-                linestyle='--',
-                alpha=0.7
-            )
-            ax.add_patch(vong_tron)
+            if len(cum) > 0:
+                tam = trong_tam[i]
+                # Tính bán kính bao quanh
+                dists = np.linalg.norm(cum - tam, axis=1)
+                if len(dists) > 0:
+                    ban_kinh = max(dists) + 0.15
+                else:
+                    ban_kinh = 0.2
+                    
+                vong_tron = mpatches.Circle(
+                    tam,
+                    ban_kinh,
+                    fill=False,
+                    linewidth=2,
+                    edgecolor=colors[i],
+                    linestyle='--',
+                    alpha=0.7
+                )
+                ax.add_patch(vong_tron)
         
         ax.scatter(
             trong_tam[:, 0], trong_tam[:, 1],
@@ -1478,6 +1555,33 @@ def render_clustering():
         ax.grid(True, linestyle="--", alpha=0.4)
         
         st.pyplot(fig)
+
+        # --- PHẦN MỚI THÊM VÀO: KẾT QUẢ CHI TIẾT ---
+        st.divider()
+        st.markdown("### Kết quả cuối cùng")
+        
+        # Tạo các cột để hiển thị kết quả cho gọn
+        cols_result = st.columns(k)
+        
+        for i in range(k):
+            with cols_result[i]:
+                # Tiêu đề cụm
+                st.success(f"**Cụm C{i+1}:**")
+                
+                # Lọc các điểm thuộc cụm i
+                indices = np.where(nhan == i)[0]
+                
+                # Tạo chuỗi văn bản kết quả
+                result_text = ""
+                for idx in indices:
+                    # Format: x1 = [1. 3.]
+                    result_text += f"x{idx+1} = {X[idx]}\n"
+                
+                # Hiển thị dạng code block cho dễ nhìn
+                if result_text:
+                    st.code(result_text, language="text")
+                else:
+                    st.code("(Cụm rỗng)", language="text")
 
 # GIAO DIỆN CHÍNH
 
