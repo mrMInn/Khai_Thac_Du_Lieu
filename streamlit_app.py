@@ -360,10 +360,7 @@ st.markdown("""
 
 
 
-
-# ==========================================
-# 1. THUẬT TOÁN TẬP THÔ (ROUGH SET)
-# ==========================================
+# 1. THUẬT TOÁN TẬP THÔ 
 
 def render_rough_set():
     st.markdown("""
@@ -572,9 +569,8 @@ def render_rough_set():
                           &nbsp;*(Áp dụng cho: {cls})*
                         """, unsafe_allow_html=True)
 
-# ==========================================
+
 # 2. THUẬT TOÁN TẬP PHỔ BIẾN (APRIORI)
-# ==========================================
 
 def render_frequent_itemset():
     st.markdown("""
@@ -758,9 +754,7 @@ def render_frequent_itemset():
         else:
             st.warning("Không tìm thấy luật kết hợp nào thỏa mãn điều kiện!")
 
-# ==========================================
-# 3. THUẬT TOÁN CÂY QUYẾT ĐỊNH (DECISION TREE)
-# ==========================================
+# 3. THUẬT TOÁN CÂY QUYẾT ĐỊNH
 
 def render_decision_tree():
     st.markdown("""
@@ -861,8 +855,7 @@ def render_information_gain_tree():
     st.subheader("Bảng tổng hợp Information Gain")
     st.dataframe(pd.DataFrame(ig_summary_results), use_container_width=True)
     
-    # 3. Class Node và Build Tree (Giữ nguyên logic cũ nhưng cần hàm calculate_information_gain tách riêng để chạy đệ quy)
-    # LƯU Ý: Để hàm đệ quy build_tree hoạt động độc lập, ta cần khai báo lại hàm tính IG đơn giản
+    # 3. Class Node và Build Tree
     def get_ig_simple(df, feat, target):
         e_total = calculate_entropy(df[target])
         e_weighted = 0
@@ -979,7 +972,7 @@ def render_information_gain_tree():
         
         return rules
     
-    # --- PHẦN HIỂN THỊ LUẬT (Đã thêm đếm số lượng và thứ tự) ---
+    # PHẦN HIỂN THỊ LUẬT
     #st.divider()
     st.subheader("Luật quyết định sinh ra từ cây (Information Gain)")
     
@@ -1144,7 +1137,7 @@ def render_gini_index_tree():
         
         return rules
     
-    # --- PHẦN HIỂN THỊ LUẬT (Đã thêm đếm số lượng và thứ tự) ---
+    # PHẦN HIỂN THỊ LUẬT
     #st.divider()
     st.subheader("Luật quyết định sinh ra từ cây (Gini Index)")
     
@@ -1161,9 +1154,7 @@ def render_gini_index_tree():
     else:
         st.warning("Không tìm thấy luật nào.")
     
-# ==========================================
 # 4. THUẬT TOÁN NAIVE BAYES
-# ==========================================
 
 def render_naive_bayes():
     st.markdown("""
@@ -1288,9 +1279,7 @@ def render_naive_bayes():
             else:
                 st.error(f"### KẾT QUẢ DỰ ĐOÁN: **{best} (Không đi chơi)**")
 
-# ==========================================
-# 5. THUẬT TOÁN GOM CỤM (CLUSTERING)
-# ==========================================
+# 5. THUẬT TOÁN GOM CỤM K MEANS
 
 def render_clustering():
     st.markdown("""
@@ -1490,9 +1479,7 @@ def render_clustering():
         
         st.pyplot(fig)
 
-# ===========================================
 # GIAO DIỆN CHÍNH
-# ===========================================
 
 if 'selected_algorithm' not in st.session_state:
     st.session_state.selected_algorithm = "Tập thô"
