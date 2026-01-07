@@ -1509,6 +1509,33 @@ def render_clustering():
             
             nhan_cu = nhan_moi.copy()
             nhan = nhan_moi
+
+        # KẾT QUẢ CHI TIẾT 
+        st.divider()
+        st.markdown("### Kết quả cuối cùng")
+        
+        # Tạo các cột để hiển thị kết quả cho gọn
+        cols_result = st.columns(k)
+        
+        for i in range(k):
+            with cols_result[i]:
+                # Tiêu đề cụm
+                st.success(f"**Cụm C{i+1}:**")
+                
+                # Lọc các điểm thuộc cụm i
+                indices = np.where(nhan == i)[0]
+                
+                # Tạo chuỗi văn bản kết quả
+                result_text = ""
+                for idx in indices:
+                    # Format: x1 = [1. 3.]
+                    result_text += f"x{idx+1} = {X[idx]}\n"
+                
+                # Hiển thị dạng code block cho dễ nhìn
+                if result_text:
+                    st.code(result_text, language="text")
+                else:
+                    st.code("(Cụm rỗng)", language="text")
         
         # VẼ BIỂU ĐỒ
         fig, ax = plt.subplots(figsize=(9, 7))
@@ -1556,32 +1583,7 @@ def render_clustering():
         
         st.pyplot(fig)
 
-        # --- PHẦN MỚI THÊM VÀO: KẾT QUẢ CHI TIẾT ---
-        st.divider()
-        st.markdown("### Kết quả cuối cùng")
         
-        # Tạo các cột để hiển thị kết quả cho gọn
-        cols_result = st.columns(k)
-        
-        for i in range(k):
-            with cols_result[i]:
-                # Tiêu đề cụm
-                st.success(f"**Cụm C{i+1}:**")
-                
-                # Lọc các điểm thuộc cụm i
-                indices = np.where(nhan == i)[0]
-                
-                # Tạo chuỗi văn bản kết quả
-                result_text = ""
-                for idx in indices:
-                    # Format: x1 = [1. 3.]
-                    result_text += f"x{idx+1} = {X[idx]}\n"
-                
-                # Hiển thị dạng code block cho dễ nhìn
-                if result_text:
-                    st.code(result_text, language="text")
-                else:
-                    st.code("(Cụm rỗng)", language="text")
 
 # GIAO DIỆN CHÍNH
 
