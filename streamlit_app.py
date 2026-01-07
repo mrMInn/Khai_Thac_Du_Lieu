@@ -1,4 +1,3 @@
-
 import graphviz
 import streamlit as st
 import pandas as pd
@@ -1314,117 +1313,181 @@ def render_clustering():
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # Dữ liệu mới
     X = np.array([
-        [0.7, 0.45], [2.8, 1.0], [2.6, 1.0], [1.0, 0.8], [2.5, 1.2],
-        [1.3, 1.4], [0.4, 0.7], [1.7, 1.8], [2.0, 2.0]
+        [1, 3],     # x1
+        [1.5, 3.2], # x2
+        [1.3, 2.8], # x3
+        [3, 1],     # x4
     ])
+    
     df = pd.DataFrame(X, columns=["Chiều 1", "Chiều 2"])
     df.index = [f"x{i+1}" for i in range(len(X))]
 
-    def euclid(a, b):
+    def khoang_cach_euclid(a, b):
         return np.sqrt(np.sum((a - b) ** 2))
 
-    k = 3
-    initial_centroids = np.array([X[0], X[1], X[2]]) 
+    k = 2
+    n = len(X)
+
+    # Hàm khởi tạo nhãn ngẫu nhiên
+    def khoi_tao_nhan_ngau_nhien(n, k, max_try=10):
+        tries = 0
+        while tries < max_try:
+            nhan = np.random.randint(0, k, size=n)
+            if len(np.unique(nhan)) == k:
+                return nhan
+            tries += 1
+        nhan = np.zeros(n, dtype=int)
+        for i in range(k):
+            nhan[i % n] = i
+        for j in range(k, n):
+            nhan[j] = np.random.randint(0, k)
+        return nhan
 
     if sub_menu == "Dữ liệu ban đầu":
         st.markdown("### Dữ liệu đầu vào")
         col1, col2 = st.columns([1, 2])
         with col1:
-            st.dataframe(df, use_container_width=True, height=400)
+            st.dataframe(df, use_container_width=True, height=250)
         with col2:
             fig, ax = plt.subplots(figsize=(6, 4))
             ax.scatter(X[:, 0], X[:, 1], c='gray', s=100, alpha=0.6)
             for i, txt in enumerate(df.index):
                 ax.annotate(txt, (X[i, 0]+0.05, X[i, 1]+0.05))
             ax.set_title("Phân bố dữ liệu ban đầu")
+            ax.set_xlabel("Chiều 1")
+            ax.set_ylabel("Chiều 2")
             ax.grid(True, linestyle='--', alpha=0.3)
             st.pyplot(fig)
 
     elif sub_menu == "Quá trình Gom cụm":
         st.markdown("### Chi tiết thuật toán K-Means")
-        centroids = initial_centroids.copy()
-        labels_old = None
-        iteration = 1
-        st.info(f"**Khởi tạo (k={k}):** Trọng tâm ban đầu: x1, x2, x3")
+        
+        # Khởi tạo ngẫu nhiên
+        nhan = khoi_tao_nhan_ngau_nhien(n, k)
+        st.info(f"**Khởi tạo (k={k}):** Gán nhãn ngẫu nhiên: {nhan + 1}")
+        
+        nhan_cu = None
+        lan_lap = 1
         
         while True:
-            with st.expander(f"LẦN LẶP {iteration}", expanded=(iteration==1)):
-                distances_list = []
-                for i, x in enumerate(X):
-                    d = [euclid(x, c) for c in centroids]
-                    distances_list.append(d)
-                distances = np.array(distances_list)
-                dist_df = pd.DataFrame(distances, columns=[f"Đến C{j+1}" for j in range(k)], index=df.index)
-                st.write("**1. Bảng khoảng cách:**")
-                st.dataframe(dist_df, use_container_width=True)
-
-                labels = np.argmin(distances, axis=1)
+            with st.expander(f"LẦN LẶP {lan_lap}", expanded=(lan_lap==1)):
+                # 1. Tính trọng tâm
+                trong_tam = []
+                for i in range(k):
+                    diem_trong_cum = X[nhan == i]
+                    v = np.mean(diem_trong_cum, axis=0)
+                    trong_tam.append(v)
+                trong_tam = np.array(trong_tam)
+                
+                st.write("**1. Trọng tâm các cụm:**")
+                for i in range(k):
+                    st.write(f"v{i+1} = {np.round(trong_tam[i], 3)}")
+                
+                # 2. Tạo bảng khoảng cách
+                bang = []
+                for i, diem in enumerate(X):
+                    row = [khoang_cach_euclid(diem, trong_tam[j]) for j in range(k)]
+                    bang.append(row)
+                
+                bang_df = pd.DataFrame(
+                    bang,
+                    columns=[f"v{i+1}" for i in range(k)],
+                    index=[f"x{i+1}" for i in range(len(X))]
+                )
+                
+                st.write("**2. Bảng khoảng cách:**")
+                st.dataframe(bang_df.round(4), use_container_width=True)
+                
+                # 3. Gán cụm
+                nhan_moi = np.argmin(bang, axis=1)
                 cluster_dict = defaultdict(list)
-                for idx, lab in enumerate(labels):
+                for idx, lab in enumerate(nhan_moi):
                     cluster_dict[lab].append(f"x{idx+1}")
-                st.write("**2. Kết quả gán cụm:**")
+                
+                st.write("**3. Kết quả gán cụm:**")
                 cols = st.columns(k)
                 for i in range(k):
                     with cols[i]:
                         members = ", ".join(cluster_dict[i])
-                        st.success(f"**Cụm {i+1}:** {members}")
-
-                is_converged = False
-                if labels_old is not None and np.all(labels == labels_old):
-                    is_converged = True
-                labels_old = labels.copy()
-
-                new_centroids = []
-                st.write("**3. Cập nhật trọng tâm mới:**")
-                c_cols = st.columns(k)
-                for i in range(k):
-                    cluster_points = X[labels == i]
-                    if len(cluster_points) > 0:
-                        new_c = np.mean(cluster_points, axis=0)
-                    else:
-                        new_c = centroids[i]
-                    new_centroids.append(new_c)
-                    with c_cols[i]:
-                        st.info(f"**v{i+1}** = [{new_c[0]:.3f}, {new_c[1]:.3f}]")
-                centroids = np.array(new_centroids)
+                        st.success(f"**Cụm C{i+1}:** {members}")
+                
+                # 4. Kiểm tra hội tụ
+                if nhan_cu is not None and np.all(nhan_moi == nhan_cu):
+                    st.success(f"### Thuật toán hội tụ tại lần lặp thứ {lan_lap}!")
+                    break
+                
+                nhan_cu = nhan_moi.copy()
+                nhan = nhan_moi
             
-            if is_converged:
-                st.success(f"### Thuật toán hội tụ tại lần lặp thứ {iteration}!")
-                break
-            iteration += 1
+            lan_lap += 1
 
     elif sub_menu == "Biểu đồ Kết quả":
         st.markdown("### Trực quan hóa kết quả")
-        centroids = initial_centroids.copy()
-        labels_old = None
+        
+        # Chạy thuật toán để lấy kết quả cuối
+        nhan = khoi_tao_nhan_ngau_nhien(n, k)
+        nhan_cu = None
+        
         while True:
-            distances = np.array([[euclid(x, c) for c in centroids] for x in X])
-            labels = np.argmin(distances, axis=1)
-            if labels_old is not None and np.all(labels == labels_old):
-                break
-            labels_old = labels.copy()
-            new_centroids = []
+            trong_tam = []
             for i in range(k):
-                pts = X[labels == i]
-                new_centroids.append(np.mean(pts, axis=0) if len(pts) > 0 else centroids[i])
-            centroids = np.array(new_centroids)
-
-        fig, ax = plt.subplots(figsize=(10, 7))
-        colors = ['red', 'green', 'blue', 'orange', 'purple']
+                diem_trong_cum = X[nhan == i]
+                v = np.mean(diem_trong_cum, axis=0)
+                trong_tam.append(v)
+            trong_tam = np.array(trong_tam)
+            
+            bang = []
+            for i, diem in enumerate(X):
+                row = [khoang_cach_euclid(diem, trong_tam[j]) for j in range(k)]
+                bang.append(row)
+            
+            nhan_moi = np.argmin(bang, axis=1)
+            
+            if nhan_cu is not None and np.all(nhan_moi == nhan_cu):
+                break
+            
+            nhan_cu = nhan_moi.copy()
+            nhan = nhan_moi
+        
+        # Vẽ biểu đồ
+        fig, ax = plt.subplots(figsize=(9, 7))
+        colors = ['red', 'blue', 'green', 'orange', 'purple']
+        
         for i in range(k):
-            cluster = X[labels == i]
-            ax.scatter(cluster[:, 0], cluster[:, 1], s=100, label=f"Cụm C{i+1}", c=colors[i % len(colors)])
-            center = centroids[i]
-            if len(cluster) > 0:
-                radius = max(np.linalg.norm(cluster - center, axis=1)) + 0.15
-                circle = mpatches.Circle(center, radius, fill=False, linewidth=2, edgecolor=colors[i % len(colors)], linestyle='--')
-                ax.add_patch(circle)
-        ax.scatter(centroids[:, 0], centroids[:, 1], marker="X", s=300, c='black', edgecolors="white", linewidth=2, label="Trọng tâm")
-        for i, point in enumerate(X):
-            ax.text(point[0] + 0.05, point[1] + 0.05, f"x{i+1}", fontsize=11, fontweight='bold')
+            cum = X[nhan == i]
+            ax.scatter(cum[:, 0], cum[:, 1], s=80, label=f"Cụm C{i+1}", c=colors[i])
+            
+            tam = trong_tam[i]
+            ban_kinh = max(np.linalg.norm(cum - tam, axis=1)) + 0.15
+            vong_tron = mpatches.Circle(
+                tam,
+                ban_kinh,
+                fill=False,
+                linewidth=2,
+                edgecolor=colors[i],
+                linestyle='--',
+                alpha=0.7
+            )
+            ax.add_patch(vong_tron)
+        
+        ax.scatter(
+            trong_tam[:, 0], trong_tam[:, 1],
+            marker="X", s=250, edgecolors="black",
+            c='yellow',
+            label="Trọng tâm"
+        )
+        
+        for i, diem in enumerate(X):
+            ax.text(diem[0] + 0.03, diem[1] + 0.03, f"x{i+1}", fontsize=10)
+        
+        ax.set_title("K-Means Clustering (k = 2)", fontsize=14)
+        ax.set_xlabel("Chiều 1")
+        ax.set_ylabel("Chiều 2")
         ax.legend()
         ax.grid(True, linestyle="--", alpha=0.4)
+        
         st.pyplot(fig)
 
 # ===========================================
@@ -1435,11 +1498,6 @@ if 'selected_algorithm' not in st.session_state:
     st.session_state.selected_algorithm = "Tập thô"
 
 with st.sidebar:
-    # st.markdown("""
-    #     <div style='text-align: center; padding: 1.5rem 0;'>
-    #         <div style='font-size: 25px; font-weight: bold;'> CÁC THUẬT TOÁN KHAI PHÁ DỮ LIỆU</div>
-    #     </div>
-    # """, unsafe_allow_html=True)
     st.markdown("""
     <div style='text-align: center; padding: 1.5rem 0; margin-bottom: 1rem;'>
         <div style='
@@ -1491,4 +1549,3 @@ elif selected == "Phân lớp":
     render_naive_bayes()
 elif selected == "Gom cụm":
     render_clustering()
-
