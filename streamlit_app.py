@@ -1511,8 +1511,8 @@ def render_clustering():
             nhan = nhan_moi
 
         # KẾT QUẢ CHI TIẾT 
-        st.divider()
-        st.markdown("### Kết quả cuối cùng")
+        # st.divider()
+        # st.markdown("### Kết quả cuối cùng")
         
         # Tạo các cột để hiển thị kết quả cho gọn
         cols_result = st.columns(k)
