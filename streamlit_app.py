@@ -1479,7 +1479,7 @@ def render_clustering():
         
     #     st.pyplot(fig)
 
-elif sub_menu == "Biểu đồ Kết quả":
+    elif sub_menu == "Biểu đồ Kết quả":
         st.markdown("### Trực quan hóa kết quả")
         
         nhan = khoi_tao_nhan_ngau_nhien(n, k)
