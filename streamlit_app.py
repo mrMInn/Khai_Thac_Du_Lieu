@@ -474,18 +474,114 @@ def render_rough_set():
 
     # Giao diện
 
-    tabs = st.tabs([
-        "Dữ liệu", 
-        "Xấp xỉ & Phụ thuộc", 
-        "Ma trận phân biệt & Reduct", 
-        "Luật quyết định"
-    ])
+    # tabs = st.tabs([
+    #     "Dữ liệu", 
+    #     "Xấp xỉ & Phụ thuộc", 
+    #     "Ma trận phân biệt & Reduct", 
+    #     "Luật quyết định"
+    # ])
 
-    with tabs[0]:
+    # with tabs[0]:
+    #     st.info("Bảng dữ liệu ban đầu.")
+    #     st.dataframe(df, use_container_width=True)
+
+    # with tabs[1]:
+    #     col1, col2 = st.columns(2)
+    #     with col1:
+    #         st.markdown("##### 1. Quan hệ bất khả phân biệt IND(B)")
+    #         demo_B = ["Màu tóc", "Cân nặng"]
+    #         st.write(f"Xét tập thuộc tính **B = {demo_B}**:")
+    #         ind_B = ind_equivalence(df, demo_B)
+    #         formatted_ind = [str(cls) for cls in ind_B]
+    #         st.code("\n".join(formatted_ind), language="text")
+
+    #     with col2:
+    #         st.markdown("##### 2. Xấp xỉ Dưới/Trên")
+    #         target_val = "Bị rám"
+    #         X_set = set(df[df["Kết quả"] == target_val].index)
+    #         approx_attrs = ["Màu tóc", "Chiều cao"]
+    #         eq_approx = ind_equivalence(df, approx_attrs)
+    #         lower = lower_approx(eq_approx, X_set)
+    #         upper = upper_approx(eq_approx, X_set)
+            
+    #         st.write(f"Xét tập **X = '{target_val}'** và tập thuộc tính **{approx_attrs}**:")
+    #         st.success(f"**Xấp xỉ dưới:** {lower}")
+    #         st.warning(f"**Xấp xỉ trên:** {upper}")
+
+    #     st.divider()
+    #     st.markdown("##### 3. Độ phụ thuộc dữ liệu Gamma(B,D)")
+    #     gamma, pos = dependency_degree(df, condition_attrs, decision_attr)
+    #     st.write(f"Vùng dương POS = {pos}")
+    #     st.metric("Hệ số phụ thuộc Gamma", f"{gamma:.4f}")
+
+    # with tabs[2]:
+    #     st.markdown("##### 4. Ma trận phân biệt")
+    #     M = discernibility_matrix(df, condition_attrs, decision_attr)
+    #     objs = df.index.tolist()
+    #     matrix_display = []
+    #     for i, oi in enumerate(objs):
+    #         row_data = {}
+    #         for j, oj in enumerate(objs):
+    #             if j > i: val = ""
+    #             elif i == j: val = "—"
+    #             else:
+    #                 diff = M.get((oi, oj)) or M.get((oj, oi))
+    #                 if diff is None or len(diff) == 0: val = "Empty"
+    #                 else: val = ", ".join(diff)
+    #             row_data[oj] = val
+    #         matrix_display.append(row_data)
+        
+    #     df_matrix = pd.DataFrame(matrix_display, index=objs)
+    #     st.dataframe(df_matrix, use_container_width=True)
+
+    #     st.markdown("##### 5. Rút gọn thuộc tính (Tìm các Reducts)")
+    #     clauses = build_clauses(M)
+    #     reducts = find_reducts(clauses, condition_attrs)
+    #     if reducts:
+    #         for idx, r in enumerate(reducts):
+    #             st.success(f"**Reduct {idx+1}:** {list(r)}")
+    #     else:
+    #         st.warning("Không tìm thấy Reduct nào.")
+
+    # with tabs[3]:
+    #  st.markdown("##### 6. Liệt kê luật quyết định có độ chính xác 100%")
+    #  if not reducts:
+    #     st.write("Cần tìm Reduct trước khi sinh luật.")
+    #  else:
+    #     for i, r in enumerate(reducts):
+    #         with st.expander(f"Luật từ Reduct {i+1}: {list(r)}", expanded=True):
+    #             rules = gen_rules(df, r, decision_attr)
+                
+    #             if not rules:
+    #                 st.write("Không sinh được luật nào 100%.")
+    #             else:
+    #                 # 1. Hiển thị tổng số luật
+    #                 st.markdown(f"**Tổng số luật sinh ra: {len(rules)}**")
+                    
+    #                 # 2. Vòng lặp với enumerate để lấy số thứ tự (idx bắt đầu từ 1)
+    #                 for idx, (prem, concl, cls) in enumerate(rules, 1):
+    #                     prem_str = " AND ".join([f"**{a}**='{v}'" for a, v in prem])
+                        
+    #                     # Thay dấu gạch đầu dòng (-) bằng Luật {idx}
+    #                     st.markdown(f"""
+    #                     **Luật {idx}:** NẾU {prem_str}
+    #                       &nbsp;&nbsp;THÌ **{decision_attr}** = <span style='color:red'>{concl}</span> 
+    #                       &nbsp;*(Áp dụng cho: {cls})*
+    #                     """, unsafe_allow_html=True)
+
+    
+    # ==== CODE MỚI BẮT ĐẦU ====
+    submenu = st.radio("", 
+        ["Dữ liệu", "Xấp xỉ & Phụ thuộc", 
+         "Ma trận phân biệt & Reduct", "Luật quyết định"],
+        horizontal=True, label_visibility="collapsed")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    if submenu == "Dữ liệu":
         st.info("Bảng dữ liệu ban đầu.")
         st.dataframe(df, use_container_width=True)
-
-    with tabs[1]:
+    
+    elif submenu == "Xấp xỉ & Phụ thuộc":
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("##### 1. Quan hệ bất khả phân biệt IND(B)")
@@ -513,9 +609,10 @@ def render_rough_set():
         gamma, pos = dependency_degree(df, condition_attrs, decision_attr)
         st.write(f"Vùng dương POS = {pos}")
         st.metric("Hệ số phụ thuộc Gamma", f"{gamma:.4f}")
-
-    with tabs[2]:
-        st.markdown("##### 4. Ma trận phân biệt")
+            
+    
+    elif submenu == "Ma trận phân biệt & Reduct":
+     st.markdown("##### 4. Ma trận phân biệt")
         M = discernibility_matrix(df, condition_attrs, decision_attr)
         objs = df.index.tolist()
         matrix_display = []
@@ -542,9 +639,9 @@ def render_rough_set():
                 st.success(f"**Reduct {idx+1}:** {list(r)}")
         else:
             st.warning("Không tìm thấy Reduct nào.")
-
-    with tabs[3]:
-     st.markdown("##### 6. Liệt kê luật quyết định có độ chính xác 100%")
+    
+    elif submenu == "Luật quyết định":
+        st.markdown("##### 6. Liệt kê luật quyết định có độ chính xác 100%")
      if not reducts:
         st.write("Cần tìm Reduct trước khi sinh luật.")
      else:
