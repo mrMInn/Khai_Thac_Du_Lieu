@@ -22,6 +22,20 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     
+    .stTabs [role="tab"] {
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+    .stTabs [role="tab"]:not([aria-selected="true"]) {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    .stTabs [role="tab"]:hover:not([aria-selected="true"]) {
+      color: white !important;
+      background: rgba(102, 126, 234, 0.15) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    
     * {
         font-family: 'Inter', sans-serif;
     }
