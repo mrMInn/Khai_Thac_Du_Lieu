@@ -642,11 +642,11 @@ def render_rough_set():
     
     elif submenu == "Luật quyết định":
         st.markdown("##### 6. Liệt kê luật quyết định có độ chính xác 100%")
-     if not reducts:
+    if not reducts:
         st.write("Cần tìm Reduct trước khi sinh luật.")
      else:
         for i, r in enumerate(reducts):
-            with st.expander(f"Luật từ Reduct {i+1}: {list(r)}", expanded=True):
+         with st.expander(f"Luật từ Reduct {i+1}: {list(r)}", expanded=True):
                 rules = gen_rules(df, r, decision_attr)
                 
                 if not rules:
