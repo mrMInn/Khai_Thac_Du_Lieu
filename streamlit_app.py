@@ -1412,73 +1412,6 @@ def render_clustering():
             
             lan_lap += 1
 
-    # elif sub_menu == "Biểu đồ Kết quả":
-    #     st.markdown("### Trực quan hóa kết quả")
-        
-    #     # Chạy thuật toán để lấy kết quả cuối
-    #     nhan = khoi_tao_nhan_ngau_nhien(n, k)
-    #     nhan_cu = None
-        
-    #     while True:
-    #         trong_tam = []
-    #         for i in range(k):
-    #             diem_trong_cum = X[nhan == i]
-    #             v = np.mean(diem_trong_cum, axis=0)
-    #             trong_tam.append(v)
-    #         trong_tam = np.array(trong_tam)
-            
-    #         bang = []
-    #         for i, diem in enumerate(X):
-    #             row = [khoang_cach_euclid(diem, trong_tam[j]) for j in range(k)]
-    #             bang.append(row)
-            
-    #         nhan_moi = np.argmin(bang, axis=1)
-            
-    #         if nhan_cu is not None and np.all(nhan_moi == nhan_cu):
-    #             break
-            
-    #         nhan_cu = nhan_moi.copy()
-    #         nhan = nhan_moi
-        
-    #     # Vẽ biểu đồ
-    #     fig, ax = plt.subplots(figsize=(9, 7))
-    #     colors = ['red', 'blue', 'green', 'orange', 'purple']
-        
-    #     for i in range(k):
-    #         cum = X[nhan == i]
-    #         ax.scatter(cum[:, 0], cum[:, 1], s=80, label=f"Cụm C{i+1}", c=colors[i])
-            
-    #         tam = trong_tam[i]
-    #         ban_kinh = max(np.linalg.norm(cum - tam, axis=1)) + 0.15
-    #         vong_tron = mpatches.Circle(
-    #             tam,
-    #             ban_kinh,
-    #             fill=False,
-    #             linewidth=2,
-    #             edgecolor=colors[i],
-    #             linestyle='--',
-    #             alpha=0.7
-    #         )
-    #         ax.add_patch(vong_tron)
-        
-    #     ax.scatter(
-    #         trong_tam[:, 0], trong_tam[:, 1],
-    #         marker="X", s=250, edgecolors="black",
-    #         c='yellow',
-    #         label="Trọng tâm"
-    #     )
-        
-    #     for i, diem in enumerate(X):
-    #         ax.text(diem[0] + 0.03, diem[1] + 0.03, f"x{i+1}", fontsize=10)
-        
-    #     ax.set_title("K-Means Clustering (k = 2)", fontsize=14)
-    #     ax.set_xlabel("Chiều 1")
-    #     ax.set_ylabel("Chiều 2")
-    #     ax.legend()
-    #     ax.grid(True, linestyle="--", alpha=0.4)
-        
-    #     st.pyplot(fig)
-
     elif sub_menu == "Biểu đồ Kết quả":
         st.markdown("### Trực quan hóa kết quả")
         
@@ -1509,10 +1442,6 @@ def render_clustering():
             
             nhan_cu = nhan_moi.copy()
             nhan = nhan_moi
-
-        # KẾT QUẢ CHI TIẾT 
-        # st.divider()
-        # st.markdown("### Kết quả cuối cùng")
         
         # Tạo các cột để hiển thị kết quả cho gọn
         cols_result = st.columns(k)
@@ -1582,8 +1511,6 @@ def render_clustering():
         ax.grid(True, linestyle="--", alpha=0.4)
         
         st.pyplot(fig)
-
-        
 
 # GIAO DIỆN CHÍNH
 
