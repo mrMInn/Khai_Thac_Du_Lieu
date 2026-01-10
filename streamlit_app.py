@@ -1167,7 +1167,7 @@ def render_naive_bayes():
     
     sub_menu = st.radio(
         "",
-        ["Dữ liệu & Train", "Dự đoán"],
+        ["Dữ liệu", "Dự đoán"],
         horizontal=True,
         label_visibility="collapsed"
     )
