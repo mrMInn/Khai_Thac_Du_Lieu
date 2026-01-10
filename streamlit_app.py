@@ -612,7 +612,7 @@ def render_rough_set():
             
     
     elif submenu == "Ma trận phân biệt & Reduct":
-     st.markdown("##### 4. Ma trận phân biệt")
+        st.markdown("##### 4. Ma trận phân biệt")
         M = discernibility_matrix(df, condition_attrs, decision_attr)
         objs = df.index.tolist()
         matrix_display = []
