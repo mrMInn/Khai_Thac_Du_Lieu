@@ -1206,7 +1206,7 @@ def render_naive_bayes():
 
     model = train_naive_bayes(df, "Play")
 
-    if sub_menu == "Dữ liệu & Train":
+    if sub_menu == "Dữ liệu":
         c1, c2 = st.columns([1, 1])
         with c1:
             st.subheader("Dữ liệu huấn luyện")
@@ -1526,11 +1526,9 @@ with st.sidebar:
             text-transform: uppercase; 
             letter-spacing: 1.5px;
             line-height: 1.4;
-            /* Tạo màu chữ Gradient: Trắng -> Tím nhạt */
             background: linear-gradient(90deg, #ffffff 0%, #a5b4fc 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            /* Thêm bóng đổ phát sáng nhẹ */
             filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.5));
         '>
             CÁC THUẬT TOÁN<br>KHAI PHÁ DỮ LIỆU
